@@ -1,0 +1,8 @@
+App icon photo source
+---------------------
+Gyoza photo: "Huge gyoza at Ginza Tenryu in Solamachi" — Wikimedia Commons
+https://commons.wikimedia.org/wiki/File:Huge_gyoza_at_Ginza_Tenryu_in_Solamachi.jpg
+License: CC0 1.0 (public domain dedication)
+
+One gyoza was cut out of the photo and composited with a glow effect
+to make the icons in this folder and ../favicon.ico.
