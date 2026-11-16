@@ -76,7 +76,7 @@
     .accordion-item.open .accordion-content { grid-template-rows:1fr; }
     .accordion-item.open .faq-icon { transform:rotate(45deg); }
     .faq-icon { transition:transform .3s; }
-    .reveal { opacity:0; transform:translateY(22px); transition:opacity .65s, transform .65s; }
+    .reveal { opacity:0; transform:perspective(1200px) translateY(48px) rotateX(14deg) scale(.97); transform-origin:50% 100%; transition:opacity .8s ease, transform 1s cubic-bezier(.2,.75,.25,1); }
     .reveal.visible { opacity:1; transform:none; }
     .hide-scrollbar::-webkit-scrollbar { display:none; }
     .hide-scrollbar { scrollbar-width:none; }
@@ -118,6 +118,13 @@
     .street.street-still * { animation:none !important; }
     .street.street-still .steam { opacity:.35; }
     @media (max-width:767px) { .street { height:250px; } .shopfront { width:280px; } }
+    /* Page-wide 3D: hero gyoza (js/hero3d.js) + card tilt (js/tilt3d.js) */
+    .hero3d { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+    [data-tilt] { transition:transform .6s cubic-bezier(.2,.7,.2,1), box-shadow .6s; will-change:transform; }
+    [data-tilt].tilting { transition:transform .1s linear, box-shadow .3s; box-shadow:0 30px 70px rgba(30,16,10,.28); }
+    .tilt-glare { position:absolute; inset:0; z-index:3; pointer-events:none; border-radius:inherit; opacity:0; transition:opacity .4s; background:radial-gradient(circle at var(--gx,50%) var(--gy,50%), rgba(255,255,255,.38), rgba(255,255,255,0) 55%); mix-blend-mode:soft-light; }
+    [data-tilt].tilting .tilt-glare { opacity:1; }
+    #top figure .tilt-glare { border-radius:1.75rem; }
     /* 3D street scene (js/street3d.js); the 2D layers above stay as the fallback */
     .street3d { position:absolute; inset:0; z-index:5; cursor:default; }
     .street3d canvas { display:block; width:100%; height:100%; }
@@ -174,7 +181,7 @@
     <section id="top" class="hero-image noise relative min-h-[760px] overflow-hidden pt-[68px] text-white md:min-h-[820px] md:pt-[76px]">
       <div class="absolute -right-20 top-28 hidden h-[520px] w-[520px] rounded-full border border-white/15 lg:block"></div>
       <div class="absolute -right-6 top-44 hidden h-[360px] w-[360px] rounded-full border border-white/10 lg:block"></div>
-      <div class="mx-auto flex min-h-[692px] max-w-[1440px] flex-col justify-end gap-10 px-5 pb-12 pt-24 md:min-h-[744px] md:justify-center md:px-8 md:pb-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:px-12">
+      <div class="relative z-[1] mx-auto flex min-h-[692px] max-w-[1440px] flex-col justify-end gap-10 px-5 pb-12 pt-24 md:min-h-[744px] md:justify-center md:px-8 md:pb-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:px-12">
         <div class="max-w-3xl lg:flex-1">
           <div class="eyebrow mb-7 text-sand">每日手作・現點現煎</div>
           <h1 class="font-display text-[3.15rem] font-black leading-[1.1] tracking-tight sm:text-6xl md:text-7xl lg:text-[4.3rem] xl:text-[5.4rem]">
@@ -191,7 +198,7 @@
             <span class="flex items-center gap-2"><i data-lucide="flame" class="h-4 w-4 text-[#f3a366]"></i> 接單現煎</span>
           </div>
         </div>
-        <figure class="relative mx-auto w-full max-w-[420px] shrink-0 lg:mx-0 lg:mb-14 lg:w-[400px] xl:w-[440px]">
+        <figure data-tilt="7" class="relative mx-auto w-full max-w-[420px] shrink-0 lg:mx-0 lg:mb-14 lg:w-[400px] xl:w-[440px]">
           <img src="images/hero-poster.jpg" width="640" height="800" alt="鍋貼品牌社群行銷菜單海報：開胃菜、主餐、加點、飲料、甜點五大企劃，主標語「今天，貼一下？」" class="block aspect-[4/5] w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/50 ring-1 ring-white/15" fetchpriority="high">
         </figure>
       </div>
@@ -259,7 +266,7 @@
       <div class="mx-auto max-w-[1320px] px-5 md:px-8 xl:px-12">
         <div class="grid items-center gap-14 lg:grid-cols-[1.04fr_.96fr] lg:gap-20">
           <div class="reveal relative">
-            <div class="overflow-hidden rounded-[2rem]"><img src="https://images.unsplash.com/photo-1626776876729-bab4369a5a5a?auto=format&fit=crop&w=1400&q=85" alt="師傅手工包製餃子" class="aspect-[4/5] w-full object-cover" loading="lazy"></div>
+            <div data-tilt="5" class="relative overflow-hidden rounded-[2rem]"><img src="https://images.unsplash.com/photo-1626776876729-bab4369a5a5a?auto=format&fit=crop&w=1400&q=85" alt="師傅手工包製餃子" class="aspect-[4/5] w-full object-cover" loading="lazy"></div>
             <div class="absolute -bottom-6 -right-2 max-w-[230px] rounded-2xl bg-ink p-6 text-white shadow-lift md:-right-7 md:p-7">
               <p class="font-display text-4xl font-bold text-[#f3a366]">30</p>
               <p class="mt-1 text-sm font-semibold">年不變的手感</p>
@@ -303,7 +310,7 @@
       <div class="mx-auto max-w-[1320px] px-5 md:px-8 xl:px-12">
         <div class="grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
           <div class="reveal relative order-2 lg:order-1">
-            <div class="overflow-hidden rounded-[2rem]"><img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1500&q=86" alt="冷凍鍋貼禮盒料理示意" class="aspect-[4/3] w-full object-cover" loading="lazy"></div>
+            <div data-tilt="5" class="relative overflow-hidden rounded-[2rem]"><img src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1500&q=86" alt="冷凍鍋貼禮盒料理示意" class="aspect-[4/3] w-full object-cover" loading="lazy"></div>
             <div class="absolute -bottom-5 left-5 right-5 flex items-center justify-between rounded-2xl bg-paper px-5 py-4 text-ink shadow-lift md:left-auto md:right-[-18px] md:w-[285px]">
               <span class="text-xs leading-5 text-wood/65">急速鎖鮮<br><strong class="text-base text-ink">在家 8 分鐘上桌</strong></span><i data-lucide="snowflake" class="h-9 w-9 text-clay"></i>
             </div>
@@ -467,7 +474,7 @@
     function renderMenu() {
       const items = products.filter(p => p.category === activeCategory);
       document.getElementById('menuGrid').innerHTML = items.map(p => `
-        <article class="product-card card-hover group overflow-hidden rounded-[1.6rem] border border-wood/[.08] bg-white shadow-[0_10px_30px_rgba(70,42,27,.06)]">
+        <article data-tilt="8" class="product-card card-hover group relative overflow-hidden rounded-[1.6rem] border border-wood/[.08] bg-white shadow-[0_10px_30px_rgba(70,42,27,.06)]">
           <div class="relative aspect-[4/3] overflow-hidden bg-sand"><img src="${p.image}" alt="${p.name}" class="h-full w-full object-cover" loading="lazy"><span class="absolute left-4 top-4 rounded-full bg-paper/90 px-3 py-1.5 text-[11px] font-bold text-clay backdrop-blur">${p.tag}</span></div>
           <div class="p-5"><div class="flex items-start justify-between gap-3"><h3 class="font-display text-xl font-bold leading-snug">${p.name}</h3><strong class="whitespace-nowrap text-clay">${money(p.price)}</strong></div><p class="mt-3 min-h-[48px] text-sm leading-6 text-wood/60">${p.desc}</p>
           <div class="mt-5 flex items-center justify-between"><span class="flex items-center gap-1 text-[11px] text-wood/45">辣度 ${p.spice ? '<span class="text-clay">'+'●'.repeat(p.spice)+'</span><span class="text-sand">'+'●'.repeat(3-p.spice)+'</span>' : '<span class="text-sage">不辣</span>'}</span><button class="add-to-cart flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-xs font-bold text-white transition hover:bg-clay" data-id="${p.id}" aria-label="將${p.name}加入購物車"><i data-lucide="plus" class="h-4 w-4"></i> 加入</button></div></div>
@@ -622,6 +629,8 @@
     /* PWA: register the service worker for install + offline support */
     if('serviceWorker' in navigator && location.protocol.startsWith('http')){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
   </script>
-  <script src="js/street3d.js?v=1" defer></script>
+  <script src="js/hero3d.js?v=1" defer></script>
+  <script src="js/tilt3d.js?v=1" defer></script>
+  <script src="js/street3d.js?v=2" defer></script>
 </body>
 </html>

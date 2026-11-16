@@ -14,13 +14,13 @@
   if (!hasWebGL() || !('IntersectionObserver' in window)) return;
 
   function loadThree() {
-    return new Promise(function (resolve, reject) {
+    window.__loadThree = window.__loadThree || new Promise(function (resolve, reject) {
       if (window.THREE) return resolve();
       var s = document.createElement('script');
       s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      s.onload = resolve; s.onerror = reject;
-      document.head.appendChild(s);
+      s.onload = resolve; s.onerror = reject; document.head.appendChild(s);
     });
+    return window.__loadThree;
   }
 
   var started = false;
