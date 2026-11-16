@@ -517,7 +517,7 @@
     document.getElementById('checkoutModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCheckout()});
     document.querySelectorAll('input[name="fulfillment"]').forEach(r=>r.addEventListener('change',e=>{const field=document.getElementById('addressField'),input=field.querySelector('input');const show=e.target.value==='冷凍宅配';field.classList.toggle('hidden',!show);input.required=show;}));
     /* Checkout → Google Apps Script → Google Sheet. Paste the GAS web app URL (ends with /exec) below. */
-    const ORDER_API_URL = '';
+    const ORDER_API_URL = 'https://script.google.com/macros/s/AKfycbwo7M-git6Qi8nklZy_vGXl2PA9svCs6sLVHgsJM-ZqAC4-XRld3d9baL62p2-jGaZa/exec';
     if (ORDER_API_URL) document.getElementById('checkoutNote').textContent = '送出後會寄送訂單確認信到你的電子信箱。目前不提供線上付款。';
     function showOrderSuccess(no, followup){document.getElementById('orderNumber').textContent=no;document.getElementById('orderFollowup').textContent=followup;document.getElementById('checkoutFormView').classList.add('hidden');document.getElementById('checkoutSuccess').classList.remove('hidden');cart=[];updateCart();refreshIcons();}
     document.getElementById('checkoutForm').addEventListener('submit',async e=>{
