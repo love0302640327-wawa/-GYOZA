@@ -109,6 +109,10 @@
     .street.static * { animation:none !important; }
     .street.static .steam { opacity:.35; }
     @media (max-width:767px) { .street { height:250px; } .shopfront { width:280px; } }
+    /* Booking button: steer clear of content it would cover */
+    #bookingFab .fab-label { display:inline-block; max-width:6em; overflow:hidden; white-space:nowrap; transition:max-width .3s ease, opacity .2s ease; }
+    #bookingFab.compact { gap:0 !important; padding:.875rem !important; }
+    #bookingFab.compact .fab-label { max-width:0; opacity:0; }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition-duration:.01ms!important; animation-duration:.01ms!important; } .reveal { opacity:1; transform:none; } }
   </style>
 </head>
@@ -176,7 +180,7 @@
           <img src="images/hero-poster.jpg" width="640" height="800" alt="鍋貼品牌社群行銷菜單海報：開胃菜、主餐、加點、飲料、甜點五大企劃，主標語「今天，貼一下？」" class="block aspect-[4/5] w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/50 ring-1 ring-white/15" fetchpriority="high">
         </figure>
       </div>
-      <div class="absolute bottom-0 right-0 hidden items-center gap-5 bg-paper px-8 py-6 text-ink lg:flex">
+      <div class="absolute bottom-0 left-0 hidden items-center gap-5 bg-paper px-8 py-6 text-ink lg:flex">
         <span class="font-display text-3xl font-bold text-ember">8:1</span>
         <span class="text-xs leading-5 text-wood/70">獨門麵水比例<br>成就薄脆金邊</span>
       </div>
@@ -188,7 +192,7 @@
         <div><div class="eyebrow text-sand">門市日常・人來人往</div><h2 id="streetTitle" class="mt-4 font-display text-3xl font-bold leading-tight md:text-5xl">熱鍋一開，<span class="text-[#f3a366]">人潮就來。</span></h2></div>
         <p class="max-w-sm text-sm leading-7 text-cream/60">從午餐尖峰到下班時段，煎台前總有人排隊，等著那一口剛起鍋的金黃酥脆。</p>
       </div>
-      <div id="streetScene" class="street mt-10 md:mt-12" role="img" aria-label="動畫：餃作門市前人來人往，門口有客人排隊買鍋貼">
+      <div id="streetScene" data-fab-avoid="compact" class="street mt-10 md:mt-12" role="img" aria-label="動畫：餃作門市前人來人往，門口有客人排隊買鍋貼">
         <div class="street-sky"></div>
         <div class="shopfront" aria-hidden="true">
           <svg viewBox="0 0 380 230">
@@ -360,7 +364,7 @@
   </div>
 
   <!-- Floating booking button -->
-  <a href="https://calendar.app.google/NoB7ejkUz3ZrkPz67" target="_blank" rel="noopener" id="bookingFab" aria-label="線上預約（開啟 Google 日曆預約頁）" class="fixed bottom-[88px] right-4 z-[45] inline-flex items-center gap-2 rounded-full bg-ember px-5 py-3.5 text-sm font-bold tracking-wider text-white shadow-lift ring-4 ring-ember/25 transition hover:-translate-y-1 hover:bg-clay focus:outline-none focus-visible:ring-ink md:bottom-8 md:right-8 md:px-6 md:py-4 md:text-base"><i data-lucide="calendar-check" class="h-5 w-5" aria-hidden="true"></i>線上預約</a>
+  <a href="https://calendar.app.google/NoB7ejkUz3ZrkPz67" target="_blank" rel="noopener" id="bookingFab" aria-label="線上預約（開啟 Google 日曆預約頁）" class="fixed bottom-[88px] right-4 z-[45] inline-flex items-center gap-2 rounded-full bg-ember px-5 py-3.5 text-sm font-bold tracking-wider text-white shadow-lift ring-4 ring-ember/25 transition hover:-translate-y-1 hover:bg-clay focus:outline-none focus-visible:ring-ink md:bottom-8 md:right-8 md:px-6 md:py-4 md:text-base"><i data-lucide="calendar-check" class="h-5 w-5" aria-hidden="true"></i><span class="fab-label">線上預約</span></a>
 
   <!-- Cart drawer -->
   <div id="cartBackdrop" class="backdrop fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"></div>
@@ -558,6 +562,19 @@
       let lastW=scene.clientWidth; new ResizeObserver(()=>{const w=scene.clientWidth; if(Math.abs(w-lastW)>40){lastW=w; build();} else scene.style.setProperty('--street-w',w+'px');}).observe(scene);
       if('IntersectionObserver' in window){ new IntersectionObserver(es=>es.forEach(e=>scene.classList.toggle('paused',!e.isIntersecting)),{rootMargin:'100px'}).observe(scene); }
       document.addEventListener('visibilitychange',()=>scene.classList.toggle('paused',document.hidden));
+    })();
+  </script>
+  <script>
+    /* Booking button: shrink to an icon while it sits over [data-fab-avoid=compact] */
+    (function(){
+      const fab=document.getElementById('bookingFab'); if(!fab) return;
+      const zones=[...document.querySelectorAll('[data-fab-avoid="compact"]')]; let queued=false;
+      function update(){
+        queued=false; const f=fab.getBoundingClientRect();
+        fab.classList.toggle('compact',zones.some(el=>{const r=el.getBoundingClientRect();return r.bottom>f.top&&r.top<f.bottom;}));
+      }
+      const q=()=>{ if(!queued){ queued=true; requestAnimationFrame(update); } };
+      addEventListener('scroll',q,{passive:true}); addEventListener('resize',q); addEventListener('load',q); q();
     })();
   </script>
 </body>
