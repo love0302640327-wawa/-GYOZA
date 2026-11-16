@@ -114,10 +114,16 @@
     .queuer .bob { animation:breathe 2.8s ease-in-out infinite alternate; }
     @keyframes breathe { from { transform:translateY(0); } to { transform:translateY(-1.2px); } }
     .street.paused *, .street.paused *::before, .street.paused *::after { animation-play-state:paused !important; }
-    .street.static .walker { animation:none; transform:translateX(var(--x)); }
-    .street.static * { animation:none !important; }
-    .street.static .steam { opacity:.35; }
+    .street.street-still .walker { animation:none; transform:translateX(var(--x)); }
+    .street.street-still * { animation:none !important; }
+    .street.street-still .steam { opacity:.35; }
     @media (max-width:767px) { .street { height:250px; } .shopfront { width:280px; } }
+    /* 3D street scene (js/street3d.js); the 2D layers above stay as the fallback */
+    .street3d { position:absolute; inset:0; z-index:5; cursor:default; }
+    .street3d canvas { display:block; width:100%; height:100%; }
+    .street.is-3d { height:460px; }
+    .street.is-3d > :not(.street3d) { display:none; }
+    @media (max-width:767px) { .street.is-3d { height:360px; } }
     /* Booking button: steer clear of content it would cover */
     #bookingFab .fab-label { display:inline-block; max-width:6em; overflow:hidden; white-space:nowrap; transition:max-width .3s ease, opacity .2s ease; }
     #bookingFab.compact { gap:0 !important; padding:.875rem !important; }
@@ -201,7 +207,7 @@
         <div><div class="eyebrow text-sand">門市日常・人來人往</div><h2 id="streetTitle" class="mt-4 font-display text-3xl font-bold leading-tight md:text-5xl">熱鍋一開，<span class="text-[#f3a366]">人潮就來。</span></h2></div>
         <p class="max-w-sm text-sm leading-7 text-cream/60">從午餐尖峰到下班時段，煎台前總有人排隊，等著那一口剛起鍋的金黃酥脆。</p>
       </div>
-      <div id="streetScene" data-fab-avoid="compact" class="street mt-10 md:mt-12" role="img" aria-label="動畫：餃作門市前人來人往，門口有客人排隊買鍋貼">
+      <div id="streetScene" data-fab-avoid="compact" class="street mt-10 md:mt-12" role="img" aria-label="動畫：餃作門市前人來人往，客人在門口排隊、走進店裡，再提著外帶袋離開">
         <div class="street-sky"></div>
         <div class="shopfront" aria-hidden="true">
           <svg viewBox="0 0 380 230">
@@ -592,7 +598,7 @@
         const n=mobile?2:3, size=mobile?26:34;
         for(let i=0;i<n;i++){ const el=document.createElement('div'); el.className='queuer'; el.style.width=size+'px'; el.style.left=(mobile?(118-i*24):(162-i*30))+'px'; el.style.zIndex=2; el.style.animationDelay=(-i*.7)+'s'; el.innerHTML=figure(person({box:false})); el.querySelector('.bob').style.animationDelay=(-i*.9)+'s'; q.appendChild(el); }
       }
-      if(reduce) scene.classList.add('static');
+      if(reduce) scene.classList.add('street-still');
       build();
       let lastW=scene.clientWidth; new ResizeObserver(()=>{const w=scene.clientWidth; if(Math.abs(w-lastW)>40){lastW=w; build();} else scene.style.setProperty('--street-w',w+'px');}).observe(scene);
       if('IntersectionObserver' in window){ new IntersectionObserver(es=>es.forEach(e=>scene.classList.toggle('paused',!e.isIntersecting)),{rootMargin:'100px'}).observe(scene); }
@@ -616,5 +622,6 @@
     /* PWA: register the service worker for install + offline support */
     if('serviceWorker' in navigator && location.protocol.startsWith('http')){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
   </script>
+  <script src="js/street3d.js?v=1" defer></script>
 </body>
 </html>
