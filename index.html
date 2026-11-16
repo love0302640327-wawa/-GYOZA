@@ -389,6 +389,7 @@
       <div id="checkoutFormView">
         <div class="sticky top-0 z-10 flex items-center justify-between border-b border-wood/10 bg-paper/95 px-6 py-5 backdrop-blur sm:px-8"><div><p class="text-xs font-bold tracking-[.15em] text-clay">CHECKOUT</p><h2 id="checkoutTitle" class="mt-1 font-display text-2xl font-bold">確認訂單方式</h2></div><button class="close-checkout grid h-11 w-11 place-items-center rounded-full bg-cream" aria-label="關閉結帳"><i data-lucide="x" class="h-5 w-5"></i></button></div>
         <form id="checkoutForm" class="p-6 sm:p-8">
+          <div class="hidden" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
           <fieldset><legend class="font-bold">1. 這次想怎麼取餐？</legend><div class="mt-4 grid grid-cols-3 gap-2" id="fulfillmentOptions">
             <label class="cursor-pointer"><input class="peer sr-only" type="radio" name="fulfillment" value="內用" checked><span class="flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-2xl border border-wood/10 bg-white text-sm font-semibold transition peer-checked:border-clay peer-checked:bg-[#f7e9dc] peer-checked:text-clay"><i data-lucide="utensils" class="h-5 w-5"></i>內用</span></label>
             <label class="cursor-pointer"><input class="peer sr-only" type="radio" name="fulfillment" value="外帶"><span class="flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-2xl border border-wood/10 bg-white text-sm font-semibold transition peer-checked:border-clay peer-checked:bg-[#f7e9dc] peer-checked:text-clay"><i data-lucide="shopping-bag" class="h-5 w-5"></i>外帶</span></label>
@@ -400,11 +401,12 @@
             <label class="text-sm font-medium sm:col-span-2">電子信箱<input type="email" name="email" required placeholder="your@email.com" class="mt-2 w-full rounded-xl border border-wood/15 bg-white px-4 py-3.5 outline-none focus:border-clay"></label>
             <label id="addressField" class="hidden text-sm font-medium sm:col-span-2">宅配地址<input type="text" name="address" placeholder="台北市大安區信義路三段 88 號" class="mt-2 w-full rounded-xl border border-wood/15 bg-white px-4 py-3.5 outline-none focus:border-clay"></label>
           </div></fieldset>
-          <div class="mt-8 rounded-2xl bg-cream p-5"><div class="flex items-center justify-between"><span class="text-sm text-wood/65">共 <span id="checkoutCount">0</span> 件商品</span><strong id="checkoutTotal" class="font-display text-2xl text-clay">NT$ 0</strong></div><p class="mt-2 text-xs text-wood/50">此頁為體驗展示，不會進行真實付款或扣款。</p></div>
-          <button type="submit" class="btn mt-6 w-full bg-ember py-4 text-white hover:bg-[#ea7d40]">送出訂單 <i data-lucide="check-circle" class="h-5 w-5"></i></button>
+          <div class="mt-8 rounded-2xl bg-cream p-5"><div class="flex items-center justify-between"><span class="text-sm text-wood/65">共 <span id="checkoutCount">0</span> 件商品</span><strong id="checkoutTotal" class="font-display text-2xl text-clay">NT$ 0</strong></div><p id="checkoutNote" class="mt-2 text-xs text-wood/50">此頁為體驗展示，不會進行真實付款或扣款。</p></div>
+          <p id="checkoutError" class="mt-4 hidden rounded-xl bg-[#f8e1dc] px-4 py-3 text-sm text-[#a03a2a]" role="alert"></p>
+          <button type="submit" id="checkoutSubmit" class="btn mt-6 w-full bg-ember py-4 text-white hover:bg-[#ea7d40] disabled:cursor-wait disabled:opacity-70">送出訂單 <i data-lucide="check-circle" class="h-5 w-5"></i></button>
         </form>
       </div>
-      <div id="checkoutSuccess" class="hidden px-6 py-14 text-center sm:px-12 sm:py-16"><div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#e7efe3] text-sage"><i data-lucide="check" class="h-10 w-10"></i></div><p class="mt-7 text-xs font-bold tracking-[.17em] text-clay">ORDER CONFIRMED</p><h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">訂單已建立，準備開煎！</h2><p class="mx-auto mt-4 max-w-md leading-7 text-wood/65">已收到你的訂單 <strong id="orderNumber" class="text-ink"></strong>。餐點完成後，我們會透過手機通知你。</p><button class="close-checkout btn mt-8 bg-ink px-8 py-4 text-white">完成</button></div>
+      <div id="checkoutSuccess" class="hidden px-6 py-14 text-center sm:px-12 sm:py-16"><div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#e7efe3] text-sage"><i data-lucide="check" class="h-10 w-10"></i></div><p class="mt-7 text-xs font-bold tracking-[.17em] text-clay">ORDER CONFIRMED</p><h2 class="mt-3 font-display text-3xl font-bold md:text-4xl">訂單已建立，準備開煎！</h2><p class="mx-auto mt-4 max-w-md leading-7 text-wood/65">已收到你的訂單 <strong id="orderNumber" class="text-ink"></strong>。<span id="orderFollowup">餐點完成後，我們會透過手機通知你。</span></p><button class="close-checkout btn mt-8 bg-ink px-8 py-4 text-white">完成</button></div>
     </div>
   </div>
 
@@ -514,7 +516,31 @@
     document.querySelectorAll('.close-checkout').forEach(b=>b.addEventListener('click',closeCheckout));
     document.getElementById('checkoutModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeCheckout()});
     document.querySelectorAll('input[name="fulfillment"]').forEach(r=>r.addEventListener('change',e=>{const field=document.getElementById('addressField'),input=field.querySelector('input');const show=e.target.value==='冷凍宅配';field.classList.toggle('hidden',!show);input.required=show;}));
-    document.getElementById('checkoutForm').addEventListener('submit',e=>{e.preventDefault();const no=`#GZ${new Date().getFullYear()}${String(Math.floor(Math.random()*9000)+1000)}`;document.getElementById('orderNumber').textContent=no;document.getElementById('checkoutFormView').classList.add('hidden');document.getElementById('checkoutSuccess').classList.remove('hidden');cart=[];updateCart();refreshIcons();});
+    /* Checkout → Google Apps Script → Google Sheet. Paste the GAS web app URL (ends with /exec) below. */
+    const ORDER_API_URL = '';
+    if (ORDER_API_URL) document.getElementById('checkoutNote').textContent = '送出後會寄送訂單確認信到你的電子信箱。目前不提供線上付款。';
+    function showOrderSuccess(no, followup){document.getElementById('orderNumber').textContent=no;document.getElementById('orderFollowup').textContent=followup;document.getElementById('checkoutFormView').classList.add('hidden');document.getElementById('checkoutSuccess').classList.remove('hidden');cart=[];updateCart();refreshIcons();}
+    document.getElementById('checkoutForm').addEventListener('submit',async e=>{
+      e.preventDefault();
+      const form=e.target, btn=document.getElementById('checkoutSubmit'), err=document.getElementById('checkoutError');
+      err.classList.add('hidden');
+      if(!cart.length) return;
+      if(!ORDER_API_URL){ showOrderSuccess(`#GZ${new Date().getFullYear()}${String(Math.floor(Math.random()*9000)+1000)}`,'（體驗模式：尚未連接訂單系統）'); return; }
+      const fd=new FormData(form);
+      const payload={name:fd.get('name'),phone:fd.get('phone'),email:fd.get('email'),fulfillment:fd.get('fulfillment'),address:fd.get('address')||'',website:fd.get('website')||'',items:cart.map(i=>({id:i.id,qty:i.qty})),source:matchMedia('(display-mode: standalone)').matches?'pwa':'web'};
+      const label=btn.innerHTML; btn.disabled=true; btn.textContent='訂單送出中…';
+      const ctrl=new AbortController(), timer=setTimeout(()=>ctrl.abort(),25000);
+      try{
+        const res=await fetch(ORDER_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),signal:ctrl.signal});
+        const data=await res.json();
+        if(!data.ok) throw new Error(data.error||'訂單送出失敗，請稍後再試。');
+        form.reset(); document.getElementById('addressField').classList.add('hidden');
+        showOrderSuccess('#'+data.orderNo,'確認信已寄到你的信箱，餐點完成後會再通知你。');
+      }catch(ex){
+        err.textContent=ex.name==='AbortError'?'連線逾時，請檢查網路後再試一次。':(ex.message&&!/fetch|network|json/i.test(ex.message)?ex.message:'目前無法送出訂單，請稍後再試，或直接來電門市。');
+        err.classList.remove('hidden');
+      }finally{ clearTimeout(timer); btn.disabled=false; btn.innerHTML=label; refreshIcons(); }
+    });
     document.getElementById('newsletterForm').addEventListener('submit',e=>{e.preventDefault();showToast('訂閱成功！好消息會送到你的信箱');e.target.reset();});
     document.getElementById('menuBtn').addEventListener('click',e=>{const menu=document.getElementById('mobileMenu'),open=!menu.classList.contains('hidden');menu.classList.toggle('hidden');e.currentTarget.setAttribute('aria-expanded',String(!open));e.currentTarget.innerHTML=`<i data-lucide="${open?'menu':'x'}" class="h-5 w-5"></i>`;refreshIcons();});
     document.querySelectorAll('#mobileMenu a').forEach(a=>a.addEventListener('click',()=>{document.getElementById('mobileMenu').classList.add('hidden');document.getElementById('menuBtn').setAttribute('aria-expanded','false');document.getElementById('menuBtn').innerHTML='<i data-lucide="menu" class="h-5 w-5"></i>';refreshIcons();}));
